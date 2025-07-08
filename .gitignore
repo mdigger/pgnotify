@@ -1,0 +1,9 @@
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+.env
+*.zip
+*.log
+~*
+__debug_bin*
