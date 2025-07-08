@@ -16,10 +16,10 @@ type connection struct {
 	cfg *Config
 }
 
-// listen continuously waits for notifications and sends them to the channel
-func (c *connection) listen(ctx context.Context, ch chan<- *pgconn.Notification) error {
+// Listen continuously waits for notifications and sends them to the channel
+func (c *connection) Listen(ctx context.Context, ch chan<- *pgconn.Notification) error {
 	for {
-		n, err := c.waitNotification(ctx)
+		n, err := c.WaitNotification(ctx)
 		if err != nil {
 			return err
 		}
@@ -35,10 +35,10 @@ func (c *connection) listen(ctx context.Context, ch chan<- *pgconn.Notification)
 	}
 }
 
-// waitNotification waits for a single notification with timeout handling
-func (c *connection) waitNotification(ctx context.Context) (*pgconn.Notification, error) {
+// WaitNotification waits for a single notification with timeout handling
+func (c *connection) WaitNotification(ctx context.Context) (*pgconn.Notification, error) {
 	for {
-		n, err := c.waitWithTimeout(ctx)
+		n, err := c.WaitWithTimeout(ctx)
 		if err == nil {
 			return n, nil
 		}
@@ -51,14 +51,14 @@ func (c *connection) waitNotification(ctx context.Context) (*pgconn.Notification
 			return nil, err
 		}
 
-		if err := c.ping(ctx); err != nil {
+		if err := c.Ping(ctx); err != nil {
 			return nil, fmt.Errorf("ping failed: %w", err)
 		}
 	}
 }
 
-// waitWithTimeout waits for notification with configured timeout
-func (c *connection) waitWithTimeout(ctx context.Context) (*pgconn.Notification, error) {
+// WaitWithTimeout waits for notification with configured timeout
+func (c *connection) WaitWithTimeout(ctx context.Context) (*pgconn.Notification, error) {
 	timeout := c.cfg.WaitTimeout
 	if timeout <= 0 {
 		timeout = defaultWaitTimeout
@@ -70,8 +70,8 @@ func (c *connection) waitWithTimeout(ctx context.Context) (*pgconn.Notification,
 	return c.WaitForNotification(ctx)
 }
 
-// ping checks connection health with configured timeout
-func (c *connection) ping(ctx context.Context) error {
+// Ping checks connection health with configured timeout
+func (c *connection) Ping(ctx context.Context) error {
 	timeout := c.cfg.PingTimeout
 	if timeout <= 0 {
 		timeout = defaultPingTimeout
@@ -80,5 +80,5 @@ func (c *connection) ping(ctx context.Context) error {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	return c.Ping(ctx)
+	return c.Conn.Ping(ctx)
 }

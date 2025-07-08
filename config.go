@@ -101,7 +101,7 @@ func (c *Config) listenOnce(ctx context.Context, pool *pgxpool.Pool, notifyCh ch
 	}
 	defer conn.Close(ctx) //nolint:errcheck
 
-	return conn.listen(ctx, notifyCh)
+	return conn.Listen(ctx, notifyCh)
 }
 
 // connect acquires a connection and subscribes to channels
