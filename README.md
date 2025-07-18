@@ -56,18 +56,22 @@ func main() {
 	// Create notification channel
 	notifyCh := make(chan *pgconn.Notification, 100)
 
+	// Process notifications
+	go func(){
+	 	for n := range notifyCh {
+			logger.Info("received notification", 
+				"channel", n.Channel,
+				"payload", n.Payload)
+		}
+	}()
+
 	// Start listening
 	if err := cfg.Listen(ctx, pool, notifyCh); err != nil {
 		logger.Error("listener failed", "error", err)
 		return
 	}
 
-	// Process notifications
-	for n := range notifyCh {
-		logger.Info("received notification", 
-			"channel", n.Channel,
-			"payload", n.Payload)
-	}
+	// Stopped listening
 }
 ```
 
