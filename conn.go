@@ -27,7 +27,7 @@ func (c *connection) Listen(ctx context.Context, ch chan<- *pgconn.Notification)
 		select {
 		case ch <- n:
 			if c.cfg.Logger != nil {
-				c.cfg.Logger.Debug("notification sent", "channel", n.Channel)
+				c.cfg.Logger.Debug("notification received", "channel", n.Channel)
 			}
 		case <-ctx.Done():
 			return nil
